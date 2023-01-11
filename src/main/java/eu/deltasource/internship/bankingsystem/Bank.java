@@ -1,4 +1,4 @@
-package eu.deltasource.internship;
+package eu.deltasource.internship.bankingsystem;
 
 import java.util.HashMap;
 import java.util.Map;

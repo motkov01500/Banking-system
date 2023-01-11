@@ -1,6 +1,7 @@
-package eu.deltasource.internship;
+package eu.deltasource.internship.bankingsystem;
 
 public class Owner {
+
     private String firstName;
     private String lastName;
     private int age;
@@ -25,6 +26,6 @@ public class Owner {
 
     @Override
     public String toString() {
-        return String.format("The full name of owner is: %s %s\nThe age of owner is:%s",getFirstName(),getLastName(),getAge());
+        return String.format("The full name of owner is: %s %s\nThe age of owner is:%s", getFirstName(), getLastName(), getAge());
     }
 }
