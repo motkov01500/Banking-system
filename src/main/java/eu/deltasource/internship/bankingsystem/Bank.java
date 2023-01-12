@@ -14,6 +14,6 @@ public class Bank {
         this.name = name;
         this.address = address;
         this.countOfCustomers = countOfCustomers;
-        this.priceList = new HashMap<>();
+        this.priceList = priceList;
     }
 }
