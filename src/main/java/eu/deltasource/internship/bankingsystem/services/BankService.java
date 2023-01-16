@@ -1,7 +1,11 @@
 package eu.deltasource.internship.bankingsystem.services;
 
-public interface BankService {
-    void withDrawing(double amountToWithDraw,String iban);
+import eu.deltasource.internship.bankingsystem.BankAccount;
 
-    void depositing(double amountToDeposit,String sourceIban,String targetIban);
+import java.math.BigDecimal;
+
+public interface BankService {
+    void withDrawing(BigDecimal amountToWithDraw, BankAccount accountForWithDraw);
+
+    void depositing(BigDecimal amountToDeposit, BankAccount sourceAccount, BankAccount targetAccount);
 }
