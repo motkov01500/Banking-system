@@ -8,4 +8,6 @@ public interface BankService {
     void withDrawing(BigDecimal amountToWithDraw, BankAccount accountForWithDraw);
 
     void depositing(BigDecimal amountToDeposit, BankAccount accountToDeposit);
+
+    void transferMoney(BigDecimal amountToDeposit, BankAccount sourceAccount, BankAccount targetAccount)
 }

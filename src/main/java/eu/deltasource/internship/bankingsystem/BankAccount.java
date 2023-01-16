@@ -18,6 +18,10 @@ public class BankAccount {
         this.amountAvailable = amountAvailable;
         this.typeOfAccount = typeOfAccount;
         this.bank = bank;
+
+        if(!bank.getBankCustomers().contains(owner)){
+            bank.getBankCustomers().add(owner);
+        }
     }
 
     public BigDecimal getAmountAvailable() {

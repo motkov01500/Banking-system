@@ -29,6 +29,10 @@ public class BankServiceImpl implements BankService {
 
     @Override
     public void depositing(BigDecimal amountToDeposit, BankAccount accountToDeposit) {
-        BigDecimal amountForWithDrawWithFee = priceWithTaxes(accountToDeposit.getBank(),amountToDeposit,"deposit");
+        BigDecimal calculateTheFee = amountToDeposit.multiply(accountToDeposit.getBank().getPriceList().get("deposit"));
+        accountToDeposit.setAmountAvailable(accountToDeposit.getAmountAvailable().add(amountToDeposit.subtract(calculateTheFee)));
+        Transaction transaction = new Transaction(accountToDeposit.getIban(), accountToDeposit.getBank(), amountToDeposit, accountToDeposit.getCurrency());
+        accountToDeposit.getBank().getBankTransactions().add(transaction);
     }
+    
 }
