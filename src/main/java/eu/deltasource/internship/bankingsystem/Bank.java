@@ -24,4 +24,8 @@ public class Bank {
     public ArrayList<Transaction> getBankTransactions(){
         return bankTransactions;
     }
+
+    public Map<String, BigDecimal> getPriceList(){
+        return priceList;
+    }
 }

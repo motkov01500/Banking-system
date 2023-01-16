@@ -12,7 +12,7 @@ public class Main {
         BankServiceImpl bankService = new BankServiceImpl();
         Map<String,BigDecimal> priceList = new HashMap<String,BigDecimal>(){
             {
-                put("fee", new BigDecimal("25.5"));
+                put("withdraw", new BigDecimal("0.12"));
                 put("dollar",new BigDecimal("1.95"));
             }
         };
