@@ -13,8 +13,9 @@ public class Main {
         BankService bankService = new BankServiceImpl();
         Map<String, BigDecimal> priceList = new HashMap<String, BigDecimal>() {
             {
-                put("withdraw", new BigDecimal("0.12"));
-                put("dollar", new BigDecimal("1.95"));
+                put("withdraw", new BigDecimal("0.01"));
+                put("BGNtoDOLLAR", new BigDecimal("1.95"));
+                put("DOLLARTOBGN",new BigDecimal("0.55322"));
                 put("deposit", new BigDecimal("0.01"));
             }
         };
@@ -25,7 +26,7 @@ public class Main {
 
         BankAccount bankAccountOfBatTiZhivodar = new BankAccount(Zhivodar, "12312312asda", "dollar", dsk, new BigDecimal("255.55"), "current account");
 
-        bankService.depositing(new BigDecimal("150.55"), bankAccountOfBatTiZhivodar);
+        //bankService.depositing(new BigDecimal("150.55"), bankAccountOfBatTiZhivodar);
         bankService.withDrawing(new BigDecimal("250"), bankAccountOfBatTiZhivodar);
         System.out.println(bankAccountOfBatTiZhivodar.getAmountAvailable());
     }
