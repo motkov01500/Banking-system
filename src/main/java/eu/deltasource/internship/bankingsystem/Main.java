@@ -10,7 +10,6 @@ import java.util.Map;
 public class Main {
 
     public static void main(String[] args) {
-        //TODO:Add the implementation of main method
         BankService bankService = new BankServiceImpl();
         Map<String, BigDecimal> priceList = new HashMap<String, BigDecimal>() {
             {

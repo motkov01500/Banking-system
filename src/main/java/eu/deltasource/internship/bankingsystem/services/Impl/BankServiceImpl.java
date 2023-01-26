@@ -14,7 +14,7 @@ public class BankServiceImpl implements BankService {
         BigDecimal amountForWithDrawWithFee = priceWithTaxes(accountForWithDraw.getBank(), amountToWithDraw, "withdraw");
 
         if (amountForWithDrawWithFee.compareTo(accountForWithDraw.getAmountAvailable()) > 0) {
-            throw new IllegalArgumentException("There is no needed amount to deposit");
+            throw new IllegalArgumentException("There is no needed amount to withdraw.");
         } else {
             accountForWithDraw.setAmountAvailable(accountForWithDraw.getAmountAvailable().subtract(amountForWithDrawWithFee));
             Transaction transaction = new Transaction(accountForWithDraw.getIban(), accountForWithDraw.getBank(), amountToWithDraw, accountForWithDraw.getCurrency(), "withDraw");
@@ -35,6 +35,9 @@ public class BankServiceImpl implements BankService {
         BigDecimal sumToTransfer = calculateSumWithExchangeRate(amountToTransfer, sourceAccount, targetAccount);
         BigDecimal sumWithTaxes = calculateSumToTransferWithTaxes(amountToTransfer, sourceAccount.getBank(), targetAccount.getBank());
         BigDecimal currentExchangeRate = exchangeRate(sourceAccount,targetAccount);
+
+        if (sumWithTaxes.compareTo(sourceAccount.getAmountAvailable()) > 0)
+            throw new IllegalArgumentException("There is no needed amount to transfer.");
 
         if (targetAccount.getTypeOfAccount() != "current account" || sourceAccount.getTypeOfAccount() != "current account") {
             throw new IllegalArgumentException("You can not transfer money if one of given accounts is different from current account.");
