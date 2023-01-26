@@ -3,6 +3,9 @@ package eu.deltasource.internship.bankingsystem;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+/**
+ *  Class for making Transaction instance when make deposit, transfer or withdraw. These transactions are saved in Bank in which is created.
+ */
 public class Transaction {
     private String sourceIBAN;
     private String targetIBAN;
@@ -15,6 +18,9 @@ public class Transaction {
     private LocalDate timeStamp;
     private String typeOfTransaction;
 
+    /**
+     * Constructor of Transaction only for transfer money between two accounts.
+     */
     public Transaction(String sourceIBAN, String targetIBAN, Bank sourceBank, Bank targetBank, BigDecimal amountBeingTransferred, String sourceCurrency, String targetCurrency, BigDecimal exchangeRate,String typeOfTransaction) {
         this.sourceIBAN = sourceIBAN;
         this.targetIBAN = targetIBAN;
@@ -28,6 +34,9 @@ public class Transaction {
         this.timeStamp = LocalDate.now();
     }
 
+    /**
+     * Constructor of Transaction for deposit and withdrawing.
+     * */
     public Transaction(String targetIBAN, Bank targetBank, BigDecimal amountBeingTransferred, String targetCurrency,String typeOfTransaction){
         this.targetIBAN = targetIBAN;
         this.targetBank = targetBank;

@@ -1,5 +1,8 @@
 package eu.deltasource.internship.bankingsystem;
 
+/**
+ *  Class to make owners for bank accounts in banks.
+ */
 public class Owner {
 
     private String firstName;

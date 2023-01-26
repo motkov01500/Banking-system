@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Class to make the instance of Bank. In this class we save all transactions of the bank, all customers of the bank.
+ */
 public class Bank {
 
     private String name;

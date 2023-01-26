@@ -4,6 +4,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 
+/**
+ * Class about created bank account for any customer. The accounts could be current or savings.
+ */
 public class BankAccount {
 
     private Owner owner;
