@@ -21,6 +21,10 @@ public class Bank {
         this.bankCustomers = new ArrayList<>();
     }
 
+    public String getName() {
+        return name;
+    }
+
     public ArrayList<Transaction> getBankTransactions(){
         return bankTransactions;
     }
@@ -31,5 +35,10 @@ public class Bank {
 
     public Map<String, BigDecimal> getPriceList(){
         return priceList;
+    }
+
+    @Override
+    public String toString(){
+        return String.format("The bank: %s, has %s owners.\nOwners:\n %s\n Transactions:\n %s \n=========================================\n",this.name, this.getBankCustomers().size(),this.getBankCustomers(),this.getBankTransactions());
     }
 }

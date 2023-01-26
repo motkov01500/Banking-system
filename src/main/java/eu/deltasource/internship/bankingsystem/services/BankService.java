@@ -1,7 +1,6 @@
 package eu.deltasource.internship.bankingsystem.services;
 
 import eu.deltasource.internship.bankingsystem.BankAccount;
-
 import java.math.BigDecimal;
 
 public interface BankService {

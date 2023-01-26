@@ -26,6 +26,6 @@ public class Owner {
 
     @Override
     public String toString() {
-        return String.format("The full name of owner is: %s %s\nThe age of owner is:%s", getFirstName(), getLastName(), getAge());
+        return String.format("The full name of owner is: %s %s.The age of owner is:%s\n", getFirstName(), getLastName(), getAge());
     }
 }

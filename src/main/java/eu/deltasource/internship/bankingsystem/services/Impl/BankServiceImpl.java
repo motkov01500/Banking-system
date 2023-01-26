@@ -17,7 +17,7 @@ public class BankServiceImpl implements BankService {
             throw new IllegalArgumentException("There is no needed amount to deposit");
         } else {
             accountForWithDraw.setAmountAvailable(accountForWithDraw.getAmountAvailable().subtract(amountForWithDrawWithFee));
-            Transaction transaction = new Transaction(accountForWithDraw.getIban(), accountForWithDraw.getBank(), amountToWithDraw, accountForWithDraw.getCurrency());
+            Transaction transaction = new Transaction(accountForWithDraw.getIban(), accountForWithDraw.getBank(), amountToWithDraw, accountForWithDraw.getCurrency(), "withDraw");
             accountForWithDraw.getBank().getBankTransactions().add(transaction);
         }
     }
@@ -26,13 +26,23 @@ public class BankServiceImpl implements BankService {
     public void depositing(BigDecimal amountToDeposit, BankAccount accountToDeposit) {
         BigDecimal calculateTheFee = amountToDeposit.multiply(accountToDeposit.getBank().getPriceList().get("deposit"));
         accountToDeposit.setAmountAvailable(accountToDeposit.getAmountAvailable().add(amountToDeposit.subtract(calculateTheFee)));
-        Transaction transaction = new Transaction(accountToDeposit.getIban(), accountToDeposit.getBank(), amountToDeposit, accountToDeposit.getCurrency());
+        Transaction transaction = new Transaction(accountToDeposit.getIban(), accountToDeposit.getBank(), amountToDeposit, accountToDeposit.getCurrency(), "deposit");
         accountToDeposit.getBank().getBankTransactions().add(transaction);
     }
 
     @Override
     public void transferMoney(BigDecimal amountToTransfer, BankAccount sourceAccount, BankAccount targetAccount) {
-        BigDecimal sumToTransfer = calculateSumWithExchangeRate(amountToTransfer,sourceAccount.getBank(),sourceAccount.getCurrency(),targetAccount.getCurrency());
+        BigDecimal sumToTransfer = calculateSumWithExchangeRate(amountToTransfer, sourceAccount, targetAccount);
+        BigDecimal sumWithTaxes = calculateSumToTransferWithTaxes(amountToTransfer, sourceAccount.getBank(), targetAccount.getBank());
+        BigDecimal currentExchangeRate = exchangeRate(sourceAccount,targetAccount);
+
+        if (targetAccount.getTypeOfAccount() != "current account" || sourceAccount.getTypeOfAccount() != "current account") {
+            throw new IllegalArgumentException("You can not transfer money if one of given accounts is different from current account.");
+        } else {
+            targetAccount.setAmountAvailable(targetAccount.getAmountAvailable().add(sumToTransfer));
+            Transaction transaction = new Transaction(sourceAccount.getIban(), targetAccount.getIban(), sourceAccount.getBank(), targetAccount.getBank(), amountToTransfer, sourceAccount.getCurrency(), targetAccount.getCurrency(),currentExchangeRate, "transfering");
+            sourceAccount.setAmountAvailable(sourceAccount.getAmountAvailable().subtract(sumWithTaxes));
+        }
     }
 
     private BigDecimal priceWithTaxes(Bank bank, BigDecimal amountOfMoney, String typeOfTransaction) {
@@ -40,13 +50,37 @@ public class BankServiceImpl implements BankService {
         return amountOfMoney.add(amountOfMoney.multiply(feeOfTheBank));
     }
 
-    private BigDecimal calculateSumWithExchangeRate(BigDecimal sumToExchange, Bank sourceBank, String sourceCurrency, String targetCurrency) {
-        if (sourceCurrency == targetCurrency) {
+    private BigDecimal calculateSumWithExchangeRate(BigDecimal sumToExchange, BankAccount sourceAccount, BankAccount targetAccount) {
+        if (sourceAccount.getCurrency() == targetAccount.getCurrency()) {
             return sumToExchange;
         } else {
-            String exchangeRateToUse = String.format("%sto%s",sourceCurrency.toUpperCase(),targetCurrency.toUpperCase());
-            BigDecimal currentExchangeRate = sourceBank.getPriceList().get(exchangeRateToUse);
+            BigDecimal currentExchangeRate = exchangeRate(sourceAccount,targetAccount);
             return sumToExchange.multiply(currentExchangeRate);
+        }
+    }
+
+    private String taxForTransfer(Bank currentBank, Bank targetBank) {
+        if (currentBank != targetBank) {
+            return String.format("transferToAccountFromOtherBank");
+        } else {
+            return String.format("transferToAccountFromSameBank");
+        }
+    }
+
+    private BigDecimal calculateSumToTransferWithTaxes(BigDecimal amountToTransfer, Bank currentBank, Bank targetBank) {
+        String taxForTransferInBank = taxForTransfer(currentBank, targetBank);
+        BigDecimal tax = currentBank.getPriceList().get(taxForTransferInBank);
+
+        return amountToTransfer.add(amountToTransfer.multiply(tax));
+    }
+
+    private BigDecimal exchangeRate(BankAccount sourceAccount, BankAccount targetAccount) {
+        if (sourceAccount.getCurrency() == targetAccount.getCurrency()) {
+            return new BigDecimal("1");
+        } else {
+            String exchangeToSearchInPriceList = String.format("%sTO%s", sourceAccount.getCurrency(), targetAccount.getCurrency()).toUpperCase();
+
+            return sourceAccount.getBank().getPriceList().get(exchangeToSearchInPriceList);
         }
     }
 }
