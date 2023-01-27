@@ -77,9 +77,6 @@ public class BankServiceImpl implements BankService {
     /**
      * Method for calculate the amountOfMoney with the taxes for any type of transaction we need.
      * The method is in use from the withdrawing functionality, because we need to subtract this amount from the account.
-     * @param bank - The bank of the customer's account.
-     * @param amountOfMoney - The amount of money we want to withdraw.
-     * @param typeOfTransaction - The type of transaction.
      */
     private BigDecimal priceWithTaxes(Bank bank, BigDecimal amountOfMoney, String typeOfTransaction) {
         BigDecimal feeOfTheBank = bank.getPriceList().get(typeOfTransaction);
@@ -88,9 +85,6 @@ public class BankServiceImpl implements BankService {
 
     /**
      * Method to exchange money from one currency to another currency.
-     * @param sumToExchange - The sum we want to exchange.
-     * @param sourceAccount - The bank account of the source customer.(The customer which transfers money.)
-     * @param targetAccount - The bank account of target customer.(The customer which receives money.)
      */
     private BigDecimal calculateSumWithExchangeRate(BigDecimal sumToExchange, BankAccount sourceAccount, BankAccount targetAccount) {
         if (sourceAccount.getCurrency() == targetAccount.getCurrency()) {
@@ -104,8 +98,6 @@ public class BankServiceImpl implements BankService {
     /**
      * Method to get the key for fee about transfer to the same or another bank.
      * After that we use the key to search in price list in the source customer bank.
-     * @param currentBank - The bank of the source customer.
-     * @param targetBank - The bank of the target customer.
      */
     private String taxForTransfer(Bank currentBank, Bank targetBank) {
         if (currentBank != targetBank) {
@@ -118,8 +110,6 @@ public class BankServiceImpl implements BankService {
     /**
      * Method to get the taxes from the price list of the current bank and calculate the needed amount to transfer the money.
      * @param amountToTransfer - Amount of money we want to transfer.(Without taxes)
-     * @param currentBank - The bank of the source customer.
-     * @param targetBank - The bank of the target customer.
      */
     private BigDecimal calculateSumToTransferWithTaxes(BigDecimal amountToTransfer, Bank currentBank, Bank targetBank) {
         String taxForTransferInBank = taxForTransfer(currentBank, targetBank);
@@ -132,8 +122,6 @@ public class BankServiceImpl implements BankService {
      * Method to get the exchange rate between currencies in accounts.
      * Check the currencies in the source and target account and if currencies are same the value of  exchange rate is: 1.
      * But if the currencies are different, makes the key which we use to search in priceList in the Bank and return the current exchange rate.
-     * @param sourceAccount - The account of the source customer.
-     * @param targetAccount - The account of the target customer.
      */
     private BigDecimal exchangeRate(BankAccount sourceAccount, BankAccount targetAccount) {
         if (sourceAccount.getCurrency().equals(targetAccount.getCurrency())) {

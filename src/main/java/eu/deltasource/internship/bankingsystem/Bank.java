@@ -2,11 +2,13 @@ package eu.deltasource.internship.bankingsystem;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Class to make the instance of Bank. In this class we save all transactions of the bank, all customers of the bank.
+ * In this class we save all transactions of the bank and all customers of the bank.
+ * Also, every bank has the own price list with different taxes for transactions.
  */
 public class Bank {
 

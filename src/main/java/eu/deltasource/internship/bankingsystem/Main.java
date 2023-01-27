@@ -2,7 +2,6 @@ package eu.deltasource.internship.bankingsystem;
 
 import eu.deltasource.internship.bankingsystem.services.BankService;
 import eu.deltasource.internship.bankingsystem.services.Impl.BankServiceImpl;
-
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
