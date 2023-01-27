@@ -9,4 +9,6 @@ public interface BankService {
     void depositing(BigDecimal amountToDeposit, BankAccount accountToDeposit);
 
     void transferMoney(BigDecimal amountToTransfer, BankAccount sourceAccount, BankAccount targetAccount);
+
+    BigDecimal exchangeRate(BankAccount sourceAccount, BankAccount targetAccount);
 }

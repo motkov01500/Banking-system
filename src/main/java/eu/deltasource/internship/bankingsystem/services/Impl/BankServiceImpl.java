@@ -3,6 +3,7 @@ package eu.deltasource.internship.bankingsystem.services.Impl;
 import eu.deltasource.internship.bankingsystem.Bank;
 import eu.deltasource.internship.bankingsystem.BankAccount;
 import eu.deltasource.internship.bankingsystem.Transaction;
+import eu.deltasource.internship.bankingsystem.constants.ExchangeRateEnum;
 import eu.deltasource.internship.bankingsystem.services.BankService;
 
 import java.math.BigDecimal;
@@ -13,11 +14,11 @@ import java.math.BigDecimal;
  */
 public class BankServiceImpl implements BankService {
 
-
     /**
      * Method for withdrawing money from the Bank. Also, checks if current customer can afford to withdraw the sum.
      * Finally, if the withdrawing is successfully, the method creates the Transaction and add it to the list of transactions of customer's bank.
-     * @param amountToWithDraw - money we want to withdraw
+     *
+     * @param amountToWithDraw   - money we want to withdraw
      * @param accountForWithDraw - account from we will withdraw
      */
     @Override
@@ -36,7 +37,8 @@ public class BankServiceImpl implements BankService {
     /**
      * Method for depositing any amount of money to the customer account.
      * At the end of the method, we create a transaction which is added to the list of transactions of the customer's bank.
-     * @param amountToDeposit - the amount of money we want to deposit to the customer's account
+     *
+     * @param amountToDeposit  - the amount of money we want to deposit to the customer's account
      * @param accountToDeposit - the bank account we want to receive the money
      */
     @Override
@@ -52,15 +54,16 @@ public class BankServiceImpl implements BankService {
      * Method to transfer money between two current accounts.
      * At the start we check if the availability with the fees of the customer's bank in the source account is enough to transfer to the another account.
      * Also, if the accounts are from current type, we make the transfer after that we make the transaction and add it list of transactions of the current bank.
+     *
      * @param amountToTransfer - The amount of money we want to transfer to the another bank account.
-     * @param sourceAccount - The account from we want to transfer money.
-     * @param targetAccount - The account we want to receive the transferred money.
+     * @param sourceAccount    - The account from we want to transfer money.
+     * @param targetAccount    - The account we want to receive the transferred money.
      */
     @Override
     public void transferMoney(BigDecimal amountToTransfer, BankAccount sourceAccount, BankAccount targetAccount) {
         BigDecimal sumToTransfer = calculateSumWithExchangeRate(amountToTransfer, sourceAccount, targetAccount);
         BigDecimal sumWithTaxes = calculateSumToTransferWithTaxes(amountToTransfer, sourceAccount.getBank(), targetAccount.getBank());
-        BigDecimal currentExchangeRate = exchangeRate(sourceAccount,targetAccount);
+        BigDecimal currentExchangeRate = exchangeRate(sourceAccount, targetAccount);
 
         if (sumWithTaxes.compareTo(sourceAccount.getAmountAvailable()) > 0)
             throw new IllegalArgumentException("There is no needed amount to transfer.");
@@ -69,7 +72,7 @@ public class BankServiceImpl implements BankService {
             throw new IllegalArgumentException("You can not transfer money if one of given accounts is different from current account.");
         } else {
             targetAccount.setAmountAvailable(targetAccount.getAmountAvailable().add(sumToTransfer));
-            Transaction transaction = new Transaction(sourceAccount.getIban(), targetAccount.getIban(), sourceAccount.getBank(), targetAccount.getBank(), amountToTransfer, sourceAccount.getCurrency(), targetAccount.getCurrency(),currentExchangeRate, "transfering");
+            Transaction transaction = new Transaction(sourceAccount.getIban(), targetAccount.getIban(), sourceAccount.getBank(), targetAccount.getBank(), amountToTransfer, sourceAccount.getCurrency(), targetAccount.getCurrency(), currentExchangeRate, "transfering");
             sourceAccount.setAmountAvailable(sourceAccount.getAmountAvailable().subtract(sumWithTaxes));
         }
     }
@@ -90,7 +93,7 @@ public class BankServiceImpl implements BankService {
         if (sourceAccount.getCurrency() == targetAccount.getCurrency()) {
             return sumToExchange;
         } else {
-            BigDecimal currentExchangeRate = exchangeRate(sourceAccount,targetAccount);
+            BigDecimal currentExchangeRate = exchangeRate(sourceAccount, targetAccount);
             return sumToExchange.multiply(currentExchangeRate);
         }
     }
@@ -99,22 +102,21 @@ public class BankServiceImpl implements BankService {
      * Method to get the key for fee about transfer to the same or another bank.
      * After that we use the key to search in price list in the source customer bank.
      */
-    private String taxForTransfer(Bank currentBank, Bank targetBank) {
+    private BigDecimal taxForTransfer(Bank currentBank, Bank targetBank) {
         if (currentBank != targetBank) {
-            return String.format("transferToAccountFromOtherBank");
+            return currentBank.getPriceList().get(ExchangeRateEnum.valueOf("TRANSFER_DIFFERENT_BANK"));
         } else {
-            return String.format("transferToAccountFromSameBank");
+            return currentBank.getPriceList().get(ExchangeRateEnum.valueOf("TRANSFER_SAME_BANK"));
         }
     }
 
     /**
      * Method to get the taxes from the price list of the current bank and calculate the needed amount to transfer the money.
+     *
      * @param amountToTransfer - Amount of money we want to transfer.(Without taxes)
      */
     private BigDecimal calculateSumToTransferWithTaxes(BigDecimal amountToTransfer, Bank currentBank, Bank targetBank) {
-        String taxForTransferInBank = taxForTransfer(currentBank, targetBank);
-        BigDecimal tax = currentBank.getPriceList().get(taxForTransferInBank);
-
+        BigDecimal tax = taxForTransfer(currentBank, targetBank);
         return amountToTransfer.add(amountToTransfer.multiply(tax));
     }
 
@@ -123,13 +125,12 @@ public class BankServiceImpl implements BankService {
      * Check the currencies in the source and target account and if currencies are same the value of  exchange rate is: 1.
      * But if the currencies are different, makes the key which we use to search in priceList in the Bank and return the current exchange rate.
      */
-    private BigDecimal exchangeRate(BankAccount sourceAccount, BankAccount targetAccount) {
+    public BigDecimal exchangeRate(BankAccount sourceAccount, BankAccount targetAccount) {
         if (sourceAccount.getCurrency().equals(targetAccount.getCurrency())) {
             return new BigDecimal("1");
         } else {
-            String exchangeToSearchInPriceList = String.format("%sTO%s", sourceAccount.getCurrency(), targetAccount.getCurrency()).toUpperCase();
-
-            return sourceAccount.getBank().getPriceList().get(exchangeToSearchInPriceList);
+            String exchangeToSearchInPriceList = String.format("%sTO%s", sourceAccount.getCurrency().toUpperCase(), targetAccount.getCurrency()).toUpperCase();
+            return sourceAccount.getBank().getPriceList().get(ExchangeRateEnum.valueOf(exchangeToSearchInPriceList));
         }
     }
 }
