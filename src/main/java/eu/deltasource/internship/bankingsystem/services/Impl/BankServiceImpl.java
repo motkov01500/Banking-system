@@ -7,6 +7,8 @@ import eu.deltasource.internship.bankingsystem.constants.ExchangeRateEnum;
 import eu.deltasource.internship.bankingsystem.services.BankService;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
 
 
 /**
@@ -22,14 +24,14 @@ public class BankServiceImpl implements BankService {
      * @param accountForWithDraw - account from we will withdraw
      */
     @Override
-    public void withDrawing(BigDecimal amountToWithDraw, BankAccount accountForWithDraw) {
+    public void withDrawing(BigDecimal amountToWithDraw, BankAccount accountForWithDraw, LocalDate timestamp) {
         BigDecimal amountForWithDrawWithFee = priceWithTaxes(accountForWithDraw.getBank(), amountToWithDraw, "withdraw");
 
         if (amountForWithDrawWithFee.compareTo(accountForWithDraw.getAmountAvailable()) > 0) {
             throw new IllegalArgumentException("There is no needed amount to withdraw.");
         } else {
             accountForWithDraw.setAmountAvailable(accountForWithDraw.getAmountAvailable().subtract(amountForWithDrawWithFee));
-            Transaction transaction = new Transaction(accountForWithDraw.getIban(), accountForWithDraw.getBank(), amountToWithDraw, accountForWithDraw.getCurrency(), "withDraw");
+            Transaction transaction = new Transaction(accountForWithDraw.getIban(), accountForWithDraw.getBank(), amountToWithDraw, accountForWithDraw.getCurrency(), "withDraw",timestamp);
             accountForWithDraw.getBank().getBankTransactions().add(transaction);
         }
     }
@@ -42,13 +44,12 @@ public class BankServiceImpl implements BankService {
      * @param accountToDeposit - the bank account we want to receive the money
      */
     @Override
-    public void depositing(BigDecimal amountToDeposit, BankAccount accountToDeposit) {
-        BigDecimal calculateTheFee = amountToDeposit.multiply(accountToDeposit.getBank().getPriceList().get("deposit"));
+    public void depositing(BigDecimal amountToDeposit, BankAccount accountToDeposit,LocalDate timestamp) {
+        BigDecimal calculateTheFee = amountToDeposit.multiply(accountToDeposit.getBank().getPriceList().get(ExchangeRateEnum.valueOf("deposit".toUpperCase())));
         accountToDeposit.setAmountAvailable(accountToDeposit.getAmountAvailable().add(amountToDeposit.subtract(calculateTheFee)));
-        Transaction transaction = new Transaction(accountToDeposit.getIban(), accountToDeposit.getBank(), amountToDeposit, accountToDeposit.getCurrency(), "deposit");
+        Transaction transaction = new Transaction(accountToDeposit.getIban(), accountToDeposit.getBank(), amountToDeposit, accountToDeposit.getCurrency(), "deposit",timestamp);
         accountToDeposit.getBank().getBankTransactions().add(transaction);
     }
-
 
     /**
      * Method to transfer money between two current accounts.
@@ -60,7 +61,7 @@ public class BankServiceImpl implements BankService {
      * @param targetAccount    - The account we want to receive the transferred money.
      */
     @Override
-    public void transferMoney(BigDecimal amountToTransfer, BankAccount sourceAccount, BankAccount targetAccount) {
+    public void transferMoney(BigDecimal amountToTransfer, BankAccount sourceAccount, BankAccount targetAccount, LocalDate timestamp) {
         BigDecimal sumToTransfer = calculateSumWithExchangeRate(amountToTransfer, sourceAccount, targetAccount);
         BigDecimal sumWithTaxes = calculateSumToTransferWithTaxes(amountToTransfer, sourceAccount.getBank(), targetAccount.getBank());
         BigDecimal currentExchangeRate = exchangeRate(sourceAccount, targetAccount);
@@ -72,9 +73,24 @@ public class BankServiceImpl implements BankService {
             throw new IllegalArgumentException("You can not transfer money if one of given accounts is different from current account.");
         } else {
             targetAccount.setAmountAvailable(targetAccount.getAmountAvailable().add(sumToTransfer));
-            Transaction transaction = new Transaction(sourceAccount.getIban(), targetAccount.getIban(), sourceAccount.getBank(), targetAccount.getBank(), amountToTransfer, sourceAccount.getCurrency(), targetAccount.getCurrency(), currentExchangeRate, "transfering");
+            Transaction transaction = new Transaction(sourceAccount.getIban(), targetAccount.getIban(), sourceAccount.getBank(), targetAccount.getBank(), amountToTransfer, sourceAccount.getCurrency(), targetAccount.getCurrency(), currentExchangeRate, "transfer",timestamp);
             sourceAccount.setAmountAvailable(sourceAccount.getAmountAvailable().subtract(sumWithTaxes));
+            sourceAccount.getBank().getBankTransactions().add(transaction);
         }
+    }
+
+    /**
+     * Method returns the bank transactions of given period of time.
+     */
+    @Override
+    public ArrayList<Transaction> getTransactionsInPeriodOfTime(LocalDate startDate, LocalDate endDate,Bank bank) {
+        ArrayList<Transaction> transactionsBetweenPeriodOfTime = new ArrayList<>();
+
+        for(Transaction transaction : bank.getBankTransactions()){
+            if(transaction.getTimestamp().isAfter(startDate) && transaction.getTimestamp().isBefore(endDate))
+                transactionsBetweenPeriodOfTime.add(transaction);
+        }
+        return  transactionsBetweenPeriodOfTime;
     }
 
     /**
@@ -82,7 +98,7 @@ public class BankServiceImpl implements BankService {
      * The method is in use from the withdrawing functionality, because we need to subtract this amount from the account.
      */
     private BigDecimal priceWithTaxes(Bank bank, BigDecimal amountOfMoney, String typeOfTransaction) {
-        BigDecimal feeOfTheBank = bank.getPriceList().get(typeOfTransaction);
+        BigDecimal feeOfTheBank = bank.getPriceList().get(ExchangeRateEnum.valueOf(typeOfTransaction.toUpperCase()));
         return amountOfMoney.add(amountOfMoney.multiply(feeOfTheBank));
     }
 

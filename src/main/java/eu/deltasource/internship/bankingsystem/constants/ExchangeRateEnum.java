@@ -11,5 +11,5 @@ public enum ExchangeRateEnum {
     DEPOSIT,
     TRANSFER_SAME_BANK,
     TRANSFER_DIFFERENT_BANK,
-    WITHDRAWING;
+    WITHDRAW;
 }
