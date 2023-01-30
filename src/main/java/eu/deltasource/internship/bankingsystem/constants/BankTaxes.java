@@ -1,10 +1,6 @@
 package eu.deltasource.internship.bankingsystem.constants;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-
-public enum ExchangeRateEnum {
+public enum BankTaxes {
 
     BGNTOUSD,
     USDTOBGN,

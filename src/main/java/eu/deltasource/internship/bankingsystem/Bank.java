@@ -1,6 +1,6 @@
 package eu.deltasource.internship.bankingsystem;
 
-import eu.deltasource.internship.bankingsystem.constants.ExchangeRateEnum;
+import eu.deltasource.internship.bankingsystem.constants.BankTaxes;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -14,11 +14,11 @@ public class Bank {
 
     private String name;
     private String address;
-    private Map<ExchangeRateEnum, BigDecimal> priceList;
+    private Map<BankTaxes, BigDecimal> priceList;
     private ArrayList<Transaction> bankTransactions;
     private ArrayList<Owner> bankCustomers;
 
-    public Bank(String name, String address, Map<ExchangeRateEnum, BigDecimal> priceList) {
+    public Bank(String name, String address, Map<BankTaxes, BigDecimal> priceList) {
         this.name = name;
         this.address = address;
         this.priceList = priceList;
@@ -38,7 +38,7 @@ public class Bank {
         return bankCustomers;
     }
 
-    public Map<ExchangeRateEnum, BigDecimal> getPriceList(){
+    public Map<BankTaxes, BigDecimal> getPriceList(){
         return priceList;
     }
 
