@@ -1,7 +1,5 @@
 package eu.deltasource.internship.bankingsystem;
 
-import eu.deltasource.internship.bankingsystem.constants.BankTaxes;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Map;

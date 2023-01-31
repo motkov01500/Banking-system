@@ -3,7 +3,7 @@ package eu.deltasource.internship.bankingsystem.services.Impl;
 import eu.deltasource.internship.bankingsystem.Bank;
 import eu.deltasource.internship.bankingsystem.BankAccount;
 import eu.deltasource.internship.bankingsystem.Owner;
-import eu.deltasource.internship.bankingsystem.constants.BankTaxes;
+import eu.deltasource.internship.bankingsystem.BankTaxes;
 import eu.deltasource.internship.bankingsystem.services.BankService;
 import org.junit.Before;
 import org.junit.Test;

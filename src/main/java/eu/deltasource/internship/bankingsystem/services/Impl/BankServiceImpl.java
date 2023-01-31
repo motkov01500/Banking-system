@@ -3,7 +3,7 @@ package eu.deltasource.internship.bankingsystem.services.Impl;
 import eu.deltasource.internship.bankingsystem.Bank;
 import eu.deltasource.internship.bankingsystem.BankAccount;
 import eu.deltasource.internship.bankingsystem.Transaction;
-import eu.deltasource.internship.bankingsystem.constants.BankTaxes;
+import eu.deltasource.internship.bankingsystem.BankTaxes;
 import eu.deltasource.internship.bankingsystem.services.BankService;
 
 import java.math.BigDecimal;
@@ -84,8 +84,7 @@ public class BankServiceImpl implements BankService {
     }
 
     /**
-     * Method for calculate the amountOfMoney with the taxes for any type of transaction we need.
-     * The method is in use from the withdrawing functionality, because we need to subtract this amount from the account.
+     * Method for calculate the amountOfMoney with the taxes.(Used in withdraw method)
      */
     private BigDecimal priceWithTaxes(Bank bank, BigDecimal amountOfMoney, String typeOfTransaction) {
         BigDecimal feeOfTheBank = bank.getPriceList().get(BankTaxes.valueOf(typeOfTransaction.toUpperCase()));
@@ -106,7 +105,7 @@ public class BankServiceImpl implements BankService {
 
     /**
      * Method to get the key for fee about transfer to the same or another bank.
-     * After that we use the key to search in price list in the source customer bank.
+     * After that we use the key to search in price list in the bank of the source customer.
      */
     private BigDecimal taxForTransfer(Bank currentBank, Bank targetBank) {
         if (currentBank != targetBank) {

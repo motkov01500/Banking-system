@@ -1,6 +1,5 @@
 package eu.deltasource.internship.bankingsystem;
 
-import eu.deltasource.internship.bankingsystem.constants.BankTaxes;
 import eu.deltasource.internship.bankingsystem.services.BankService;
 import eu.deltasource.internship.bankingsystem.services.Impl.BankServiceImpl;
 import java.math.BigDecimal;
@@ -32,11 +31,11 @@ public class Main {
         BankAccount bankAccountOfBatTiIco = new BankAccount(Hristo , "234123123", "BGN", dsk, new BigDecimal("253.52"), "current account");
         BankAccount savingsBankAccountOfBatTiIco = new BankAccount(Hristo , "234123123", "BGN", dsk, new BigDecimal("253.52"), "savings account");
 
-        //bankService.depositing(new BigDecimal("150"), bankAccountOfBatTiZhivodar, LocalDate.of(2000,10,2));
+        bankService.depositing(new BigDecimal("150"), bankAccountOfBatTiZhivodar, LocalDate.of(2000,10,2));
         //bankService.withDrawing(new BigDecimal("250"), bankAccountOfBatTiZhivodar,LocalDate.of(2000,10,2));
-        bankService.transferMoney(new BigDecimal("150"),bankAccountOfBatTiZhivodar,bankAccountOfBatTiIco,LocalDate.of(2002,5,1));
+        //bankService.transferMoney(new BigDecimal("150"),bankAccountOfBatTiZhivodar,bankAccountOfBatTiIco,LocalDate.of(2002,5,1));
 
         //System.out.println(bankService.getTransactionsInPeriodOfTime(LocalDate.of(2000,9,5),LocalDate.of(2001,2,1),dsk));
-        //System.out.println(dsk);
+        System.out.println(dsk);
     }
 }

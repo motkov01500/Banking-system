@@ -1,4 +1,4 @@
-package eu.deltasource.internship.bankingsystem.constants;
+package eu.deltasource.internship.bankingsystem;
 
 public enum BankTaxes {
 
