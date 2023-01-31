@@ -1,7 +1,5 @@
 package eu.deltasource.internship.bankingsystem;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.math.BigDecimal;
 
 /**
@@ -14,9 +12,9 @@ public class BankAccount {
     private String currency;
     private Bank bank;
     private BigDecimal amountAvailable;
-    private String typeOfAccount;
+    private BankAccountType typeOfAccount;
 
-    public BankAccount(Owner owner, String iban, String currency, Bank bank, BigDecimal amountAvailable, String typeOfAccount) {
+    public BankAccount(Owner owner, String iban, String currency, Bank bank, BigDecimal amountAvailable, BankAccountType typeOfAccount) {
         this.owner = owner;
         this.iban = iban;
         this.currency = currency;
@@ -45,12 +43,11 @@ public class BankAccount {
         return bank;
     }
 
-    public String getTypeOfAccount(){
+    public BankAccountType getTypeOfAccount(){
         return typeOfAccount;
     }
 
     public void setAmountAvailable(BigDecimal amountAvailable) {
         this.amountAvailable = amountAvailable;
     }
-
 }

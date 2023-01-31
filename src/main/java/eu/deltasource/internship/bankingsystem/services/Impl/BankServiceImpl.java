@@ -1,9 +1,6 @@
 package eu.deltasource.internship.bankingsystem.services.Impl;
 
-import eu.deltasource.internship.bankingsystem.Bank;
-import eu.deltasource.internship.bankingsystem.BankAccount;
-import eu.deltasource.internship.bankingsystem.Transaction;
-import eu.deltasource.internship.bankingsystem.BankTaxes;
+import eu.deltasource.internship.bankingsystem.*;
 import eu.deltasource.internship.bankingsystem.services.BankService;
 
 import java.math.BigDecimal;
@@ -59,7 +56,7 @@ public class BankServiceImpl implements BankService {
         if (sumWithTaxes.compareTo(sourceAccount.getAmountAvailable()) > 0)
             throw new IllegalArgumentException("There is no needed amount to transfer.");
 
-        if (targetAccount.getTypeOfAccount() != "current account" || sourceAccount.getTypeOfAccount() != "current account") {
+        if (!(targetAccount.getTypeOfAccount().equals(BankAccountType.CURRENT_ACCOUNT)) || (!sourceAccount.getTypeOfAccount().equals(BankAccountType.CURRENT_ACCOUNT)) ) {
             throw new IllegalArgumentException("You can not transfer money if one of given accounts is different from current account.");
         } else {
             targetAccount.setAmountAvailable(targetAccount.getAmountAvailable().add(sumToTransfer));
@@ -132,7 +129,7 @@ public class BankServiceImpl implements BankService {
         if (sourceAccount.getCurrency().equals(targetAccount.getCurrency())) {
             return new BigDecimal("1");
         } else {
-            String exchangeToSearchInPriceList = String.format("%sTO%s", sourceAccount.getCurrency().toUpperCase(), targetAccount.getCurrency()).toUpperCase();
+            String exchangeToSearchInPriceList = String.format("%s_TO_%s", sourceAccount.getCurrency().toUpperCase(), targetAccount.getCurrency()).toUpperCase();
             return sourceAccount.getBank().getPriceList().get(BankTaxes.valueOf(exchangeToSearchInPriceList));
         }
     }

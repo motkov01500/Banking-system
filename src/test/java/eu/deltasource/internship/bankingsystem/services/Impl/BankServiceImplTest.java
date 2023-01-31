@@ -1,9 +1,6 @@
 package eu.deltasource.internship.bankingsystem.services.Impl;
 
-import eu.deltasource.internship.bankingsystem.Bank;
-import eu.deltasource.internship.bankingsystem.BankAccount;
-import eu.deltasource.internship.bankingsystem.Owner;
-import eu.deltasource.internship.bankingsystem.BankTaxes;
+import eu.deltasource.internship.bankingsystem.*;
 import eu.deltasource.internship.bankingsystem.services.BankService;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,8 +29,8 @@ public class BankServiceImplTest {
                 put(BankTaxes.DEPOSIT, new BigDecimal("0.01"));
                 put(BankTaxes.TRANSFER_DIFFERENT_BANK, new BigDecimal("0.10"));
                 put(BankTaxes.TRANSFER_SAME_BANK, new BigDecimal("0.05"));
-                put(BankTaxes.BGNTOUSD, new BigDecimal("1.95"));
-                put(BankTaxes.USDTOBGN, new BigDecimal("0.55322"));
+                put(BankTaxes.BGN_TO_USD, new BigDecimal("1.95"));
+                put(BankTaxes.USD_TO_BGN, new BigDecimal("0.55322"));
                 put(BankTaxes.WITHDRAW, new BigDecimal("0.01"));
             }
         };
@@ -41,9 +38,9 @@ public class BankServiceImplTest {
         secondOwner = new Owner("Zhivko", "Gechev", 20);
         dsk = new Bank("DSK", "Vasil Levski street", priceList);
         bankService = new BankServiceImpl();
-        accountOfHristo = new BankAccount(firstOwner, "1234123a", "BGN", dsk, new BigDecimal("250"), "current account");
-        accountOfZhivko = new BankAccount(secondOwner, "1217112a", "USD", dsk, new BigDecimal("100"), "current account");
-        savingsAccountOfZhivko = new BankAccount(secondOwner,"abcdertq","USD",dsk,new BigDecimal("1000"),"savings account");
+        accountOfHristo = new BankAccount(firstOwner, "1234123a", "BGN", dsk, new BigDecimal("250"), BankAccountType.CURRENT_ACCOUNT);
+        accountOfZhivko = new BankAccount(secondOwner, "1217112a", "USD", dsk, new BigDecimal("100"), BankAccountType.CURRENT_ACCOUNT);
+        savingsAccountOfZhivko = new BankAccount(secondOwner,"abcdertq","USD",dsk,new BigDecimal("1000"),BankAccountType.SAVINGS_ACCOUNT);
     }
 
     @Test
