@@ -1,4 +1,6 @@
-package eu.deltasource.internship.bankingsystem;
+package eu.deltasource.internship.bankingsystem.models;
+
+import eu.deltasource.internship.bankingsystem.BankAccountType;
 
 import java.math.BigDecimal;
 
@@ -21,6 +23,8 @@ public class BankAccount {
         this.amountAvailable = amountAvailable;
         this.typeOfAccount = typeOfAccount;
         this.bank = bank;
+
+        bank.getAccountList().add(this);
 
         if(!bank.getBankCustomers().contains(owner)){
             this.bank.getBankCustomers().add(owner);
@@ -49,5 +53,14 @@ public class BankAccount {
 
     public void setAmountAvailable(BigDecimal amountAvailable) {
         this.amountAvailable = amountAvailable;
+    }
+
+    //private Boolean validateCreationOfBankAccount(){
+        //boolean isAccountWithSameIBAN = bank.getAccountList().stream().f
+    //}
+
+    @Override
+    public String toString() {
+        return String.format("Bank account of %s %s. Iban is %s. Currency is:%s. Amount of this account is: %s. Type of account is: %s.\n",owner.getFirstName(),owner.getLastName(),iban,currency,amountAvailable,typeOfAccount);
     }
 }

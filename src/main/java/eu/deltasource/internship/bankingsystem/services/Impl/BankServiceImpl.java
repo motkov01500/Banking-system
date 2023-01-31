@@ -1,12 +1,17 @@
 package eu.deltasource.internship.bankingsystem.services.Impl;
 
 import eu.deltasource.internship.bankingsystem.*;
+import eu.deltasource.internship.bankingsystem.exceptions.AnyAccountIsNotCurrentFailsTransferException;
+import eu.deltasource.internship.bankingsystem.exceptions.NoNeededAmountToTransferException;
+import eu.deltasource.internship.bankingsystem.exceptions.NoNeededAmountToWithdrawException;
+import eu.deltasource.internship.bankingsystem.models.Bank;
+import eu.deltasource.internship.bankingsystem.models.BankAccount;
+import eu.deltasource.internship.bankingsystem.models.Transaction;
 import eu.deltasource.internship.bankingsystem.services.BankService;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
-
 
 /**
  * Class about business logic for Bank class.(It contains following functionalities: withdraw, deposit and transfer money.)
@@ -22,10 +27,10 @@ public class BankServiceImpl implements BankService {
         BigDecimal amountForWithDrawWithFee = priceWithTaxes(accountForWithDraw.getBank(), amountToWithDraw, "withdraw");
 
         if (amountForWithDrawWithFee.compareTo(accountForWithDraw.getAmountAvailable()) > 0) {
-            throw new IllegalArgumentException("There is no needed amount to withdraw.");
+            throw new NoNeededAmountToWithdrawException();
         } else {
             accountForWithDraw.setAmountAvailable(accountForWithDraw.getAmountAvailable().subtract(amountForWithDrawWithFee));
-            Transaction transaction = new Transaction(accountForWithDraw.getIban(), accountForWithDraw.getBank(), amountToWithDraw, accountForWithDraw.getCurrency(), "withDraw",timestamp);
+            Transaction transaction = new Transaction(accountForWithDraw.getIban(), accountForWithDraw.getBank(), amountToWithDraw, accountForWithDraw.getCurrency(), "withDraw", timestamp);
             accountForWithDraw.getBank().getBankTransactions().add(transaction);
         }
     }
@@ -35,10 +40,10 @@ public class BankServiceImpl implements BankService {
      * At the end of the method, we create a transaction which is added to the list of transactions of the customer's bank.
      */
     @Override
-    public void depositing(BigDecimal amountToDeposit, BankAccount accountToDeposit,LocalDate timestamp) {
+    public void depositing(BigDecimal amountToDeposit, BankAccount accountToDeposit, LocalDate timestamp) {
         BigDecimal calculateTheFee = amountToDeposit.multiply(accountToDeposit.getBank().getPriceList().get(BankTaxes.valueOf("deposit".toUpperCase())));
         accountToDeposit.setAmountAvailable(accountToDeposit.getAmountAvailable().add(amountToDeposit.subtract(calculateTheFee)));
-        Transaction transaction = new Transaction(accountToDeposit.getIban(), accountToDeposit.getBank(), amountToDeposit, accountToDeposit.getCurrency(), "deposit",timestamp);
+        Transaction transaction = new Transaction(accountToDeposit.getIban(), accountToDeposit.getBank(), amountToDeposit, accountToDeposit.getCurrency(), "deposit", timestamp);
         accountToDeposit.getBank().getBankTransactions().add(transaction);
     }
 
@@ -54,13 +59,13 @@ public class BankServiceImpl implements BankService {
         BigDecimal currentExchangeRate = exchangeRate(sourceAccount, targetAccount);
 
         if (sumWithTaxes.compareTo(sourceAccount.getAmountAvailable()) > 0)
-            throw new IllegalArgumentException("There is no needed amount to transfer.");
+            throw new NoNeededAmountToTransferException();
 
-        if (!(targetAccount.getTypeOfAccount().equals(BankAccountType.CURRENT_ACCOUNT)) || (!sourceAccount.getTypeOfAccount().equals(BankAccountType.CURRENT_ACCOUNT)) ) {
-            throw new IllegalArgumentException("You can not transfer money if one of given accounts is different from current account.");
+        if (!(targetAccount.getTypeOfAccount().equals(BankAccountType.CURRENT_ACCOUNT)) || (!sourceAccount.getTypeOfAccount().equals(BankAccountType.CURRENT_ACCOUNT))) {
+            throw new AnyAccountIsNotCurrentFailsTransferException();
         } else {
             targetAccount.setAmountAvailable(targetAccount.getAmountAvailable().add(sumToTransfer));
-            Transaction transaction = new Transaction(sourceAccount.getIban(), targetAccount.getIban(), sourceAccount.getBank(), targetAccount.getBank(), amountToTransfer, sourceAccount.getCurrency(), targetAccount.getCurrency(), currentExchangeRate, "transfer",timestamp);
+            Transaction transaction = new Transaction(sourceAccount.getIban(), targetAccount.getIban(), sourceAccount.getBank(), targetAccount.getBank(), amountToTransfer, sourceAccount.getCurrency(), targetAccount.getCurrency(), currentExchangeRate, "transfer", timestamp);
             sourceAccount.setAmountAvailable(sourceAccount.getAmountAvailable().subtract(sumWithTaxes));
             sourceAccount.getBank().getBankTransactions().add(transaction);
         }
@@ -70,14 +75,14 @@ public class BankServiceImpl implements BankService {
      * Method returns the bank transactions of given period of time.
      */
     @Override
-    public ArrayList<Transaction> getTransactionsInPeriodOfTime(LocalDate startDate, LocalDate endDate,Bank bank) {
+    public ArrayList<Transaction> getTransactionsInPeriodOfTime(LocalDate startDate, LocalDate endDate, Bank bank) {
         ArrayList<Transaction> transactionsBetweenPeriodOfTime = new ArrayList<>();
 
-        for(Transaction transaction : bank.getBankTransactions()){
-            if(transaction.getTimestamp().isAfter(startDate) && transaction.getTimestamp().isBefore(endDate))
+        for (Transaction transaction : bank.getBankTransactions()) {
+            if (transaction.getTimestamp().isAfter(startDate) && transaction.getTimestamp().isBefore(endDate))
                 transactionsBetweenPeriodOfTime.add(transaction);
         }
-        return  transactionsBetweenPeriodOfTime;
+        return transactionsBetweenPeriodOfTime;
     }
 
     /**

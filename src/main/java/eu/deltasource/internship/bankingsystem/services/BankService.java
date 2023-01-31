@@ -1,8 +1,8 @@
 package eu.deltasource.internship.bankingsystem.services;
 
-import eu.deltasource.internship.bankingsystem.Bank;
-import eu.deltasource.internship.bankingsystem.BankAccount;
-import eu.deltasource.internship.bankingsystem.Transaction;
+import eu.deltasource.internship.bankingsystem.models.Bank;
+import eu.deltasource.internship.bankingsystem.models.BankAccount;
+import eu.deltasource.internship.bankingsystem.models.Transaction;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

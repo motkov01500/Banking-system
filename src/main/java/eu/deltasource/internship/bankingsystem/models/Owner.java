@@ -1,4 +1,4 @@
-package eu.deltasource.internship.bankingsystem;
+package eu.deltasource.internship.bankingsystem.models;
 
 /**
  *  Class to make owners for bank accounts in banks.

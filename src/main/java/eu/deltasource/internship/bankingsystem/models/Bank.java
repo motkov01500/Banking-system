@@ -1,7 +1,10 @@
-package eu.deltasource.internship.bankingsystem;
+package eu.deltasource.internship.bankingsystem.models;
+
+import eu.deltasource.internship.bankingsystem.BankTaxes;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -13,8 +16,9 @@ public class Bank {
     private String name;
     private String address;
     private Map<BankTaxes, BigDecimal> priceList;
-    private ArrayList<Transaction> bankTransactions;
-    private ArrayList<Owner> bankCustomers;
+    private List<Transaction> bankTransactions;
+    private List<Owner> bankCustomers;
+    private List<BankAccount> accountList;
 
     public Bank(String name, String address, Map<BankTaxes, BigDecimal> priceList) {
         this.name = name;
@@ -22,17 +26,22 @@ public class Bank {
         this.priceList = priceList;
         this.bankTransactions = new ArrayList<>();
         this.bankCustomers = new ArrayList<>();
+        this.accountList = new ArrayList<>();
     }
 
     public String getName() {
         return name;
     }
 
-    public ArrayList<Transaction> getBankTransactions(){
+    public List<BankAccount> getAccountList() {
+        return accountList;
+    }
+
+    public List<Transaction> getBankTransactions(){
         return bankTransactions;
     }
 
-    public ArrayList<Owner> getBankCustomers(){
+    public List<Owner> getBankCustomers(){
         return bankCustomers;
     }
 

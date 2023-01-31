@@ -1,6 +1,9 @@
 package eu.deltasource.internship.bankingsystem.services.Impl;
 
 import eu.deltasource.internship.bankingsystem.*;
+import eu.deltasource.internship.bankingsystem.models.Bank;
+import eu.deltasource.internship.bankingsystem.models.BankAccount;
+import eu.deltasource.internship.bankingsystem.models.Owner;
 import eu.deltasource.internship.bankingsystem.services.BankService;
 import org.junit.Before;
 import org.junit.Test;

@@ -1,4 +1,6 @@
-package eu.deltasource.internship.bankingsystem;
+package eu.deltasource.internship.bankingsystem.models;
+
+import eu.deltasource.internship.bankingsystem.models.Bank;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
