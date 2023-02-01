@@ -1,6 +1,9 @@
 package eu.deltasource.internship.bankingsystem.services.Impl;
 
 import eu.deltasource.internship.bankingsystem.*;
+import eu.deltasource.internship.bankingsystem.exceptions.AnyAccountIsNotCurrentFailsTransferException;
+import eu.deltasource.internship.bankingsystem.exceptions.NoNeededAmountToTransferException;
+import eu.deltasource.internship.bankingsystem.exceptions.NoNeededAmountToWithdrawException;
 import eu.deltasource.internship.bankingsystem.models.Bank;
 import eu.deltasource.internship.bankingsystem.models.BankAccount;
 import eu.deltasource.internship.bankingsystem.models.Owner;
@@ -52,7 +55,7 @@ public class BankServiceImplTest {
         assertEquals(accountOfHristo.getAmountAvailable(), new BigDecimal("149.00"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NoNeededAmountToWithdrawException.class)
     public void withdrawingWithNoNeededAmount() {
         bankService.withDrawing(new BigDecimal("100"), accountOfZhivko, LocalDate.of(2000, 5, 2));
     }
@@ -70,12 +73,12 @@ public class BankServiceImplTest {
         assertEquals(accountOfHristo.getAmountAvailable(),new BigDecimal("277.66100"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NoNeededAmountToTransferException.class)
     public void isAmountWithTaxesIsHigherThanSourceAmount(){
         bankService.transferMoney(new BigDecimal("99"),accountOfZhivko,accountOfZhivko,LocalDate.of(2000, 5, 2));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = AnyAccountIsNotCurrentFailsTransferException.class)
     public void isAnyAccountIsNotCurrent(){
         bankService.transferMoney(new BigDecimal("99"),savingsAccountOfZhivko,accountOfZhivko,LocalDate.of(2000, 5, 2));
     }
