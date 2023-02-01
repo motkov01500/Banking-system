@@ -4,6 +4,7 @@ import eu.deltasource.internship.bankingsystem.*;
 import eu.deltasource.internship.bankingsystem.exceptions.AnyAccountIsNotCurrentFailsTransferException;
 import eu.deltasource.internship.bankingsystem.exceptions.NoNeededAmountToTransferException;
 import eu.deltasource.internship.bankingsystem.exceptions.NoNeededAmountToWithdrawException;
+import eu.deltasource.internship.bankingsystem.exceptions.messages.ExceptionMessage;
 import eu.deltasource.internship.bankingsystem.models.Bank;
 import eu.deltasource.internship.bankingsystem.models.BankAccount;
 import eu.deltasource.internship.bankingsystem.models.Transaction;
@@ -30,7 +31,7 @@ public class BankServiceImpl implements BankService {
         BigDecimal amountForWithDrawWithFee = priceWithTaxes(accountForWithDraw.getBank(), amountToWithDraw, "withdraw");
 
         if (amountForWithDrawWithFee.compareTo(accountForWithDraw.getAmountAvailable()) > 0) {
-            throw new NoNeededAmountToWithdrawException();
+            throw new NoNeededAmountToWithdrawException(ExceptionMessage.NO_NEEDED_AMOUNT_TO_WITHDRAW.getMessage());
         } else {
             accountForWithDraw.setAmountAvailable(accountForWithDraw.getAmountAvailable().subtract(amountForWithDrawWithFee));
             Transaction transaction = new Transaction(accountForWithDraw.getIban(), accountForWithDraw.getBank(), amountToWithDraw, accountForWithDraw.getCurrency(), "withdraw", timestamp);
@@ -62,10 +63,10 @@ public class BankServiceImpl implements BankService {
         BigDecimal currentExchangeRate = exchangeRate(sourceAccount, targetAccount);
 
         if (sumWithTaxes.compareTo(sourceAccount.getAmountAvailable()) > 0)
-            throw new NoNeededAmountToTransferException();
+            throw new NoNeededAmountToTransferException(ExceptionMessage.NO_NEEDED_AMOUNT_TO_TRANSFER.getMessage());
 
-        if (!(targetAccount.getTypeOfAccount().equals(BankAccountType.CURRENT_ACCOUNT)) || (!sourceAccount.getTypeOfAccount().equals(BankAccountType.CURRENT_ACCOUNT))) {
-            throw new AnyAccountIsNotCurrentFailsTransferException();
+        if (isAnyAccountIsCurrent(sourceAccount,targetAccount)) {
+            throw new AnyAccountIsNotCurrentFailsTransferException(ExceptionMessage.ANY_ACCOUNT_IS_NOT_CURRENT.getMessage());
         } else {
             targetAccount.setAmountAvailable(targetAccount.getAmountAvailable().add(sumToTransfer));
             Transaction transaction = new Transaction(sourceAccount.getIban(), targetAccount.getIban(), sourceAccount.getBank(), targetAccount.getBank(), amountToTransfer, sourceAccount.getCurrency(), targetAccount.getCurrency(), currentExchangeRate, "transfer", timestamp);
@@ -140,5 +141,9 @@ public class BankServiceImpl implements BankService {
             String exchangeToSearchInPriceList = String.format("%s_TO_%s", sourceAccount.getCurrency().toUpperCase(), targetAccount.getCurrency()).toUpperCase();
             return sourceAccount.getBank().getPriceList().get(BankTaxes.valueOf(exchangeToSearchInPriceList));
         }
+    }
+
+    public boolean isAnyAccountIsCurrent(BankAccount sourceAccount,BankAccount targetAccount){
+        return (!targetAccount.getTypeOfAccount().equals(BankAccountType.CURRENT_ACCOUNT)) || (!sourceAccount.getTypeOfAccount().equals(BankAccountType.CURRENT_ACCOUNT));
     }
 }

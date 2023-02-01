@@ -4,7 +4,7 @@ import eu.deltasource.internship.bankingsystem.exceptions.messages.ExceptionMess
 
 public class NoNeededAmountToWithdrawException extends RuntimeException {
 
-    public NoNeededAmountToWithdrawException() {
-        super(ExceptionMessage.NO_NEEDED_AMOUNT_TO_WITHDRAW.getMessage());
+    public NoNeededAmountToWithdrawException(String message) {
+        super(message);
     }
 }
