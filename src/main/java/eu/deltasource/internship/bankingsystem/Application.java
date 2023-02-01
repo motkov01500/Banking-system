@@ -33,12 +33,12 @@ public class Application {
         BankService bankService = new BankServiceImpl();
 
         bankService.depositing(new BigDecimal("150"), bankAccountOfBatTiZhivodar, LocalDate.of(2000,10,2));
-        //bankService.withDrawing(new BigDecimal("250"), bankAccountOfBatTiZhivodar,LocalDate.of(2000,10,2));
+        //bankService.withDrawing(new BigDecimal("50"), bankAccountOfBatTiZhivodar,LocalDate.of(2000,10,2));
         bankService.transferMoney(new BigDecimal("150"),bankAccountOfBatTiZhivodar,bankAccountOfBatTiIco,LocalDate.of(2002,5,1));
 
-        //System.out.println(bankAccountOfBatTiIco);
-        System.out.println(dsk.getAccountList());
+        //System.out.println(bankAccountOfBatTiZhivodar.getAmountAvailable());
+        //System.out.println(dsk.getAccountList());
         //System.out.println(bankService.getTransactionsInPeriodOfTime(LocalDate.of(2000,9,5),LocalDate.of(2001,2,1),dsk));
-        //System.out.println(dsk);
+        System.out.println(dsk);
     }
 }

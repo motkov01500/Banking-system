@@ -24,10 +24,8 @@ public class BankAccount {
         this.typeOfAccount = typeOfAccount;
         this.bank = bank;
 
-        bank.getAccountList().add(this);
-
         if(!bank.getBankCustomers().contains(owner)){
-            this.bank.getBankCustomers().add(owner);
+            this.bank.addBankCustomer(owner);
         }
     }
 
