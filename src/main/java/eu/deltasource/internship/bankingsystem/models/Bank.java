@@ -1,5 +1,6 @@
 package eu.deltasource.internship.bankingsystem.models;
 
+import eu.deltasource.internship.bankingsystem.BankAccountType;
 import eu.deltasource.internship.bankingsystem.BankTaxes;
 
 import java.math.BigDecimal;

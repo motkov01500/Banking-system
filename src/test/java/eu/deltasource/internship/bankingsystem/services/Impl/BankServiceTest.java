@@ -18,7 +18,7 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 
-public class BankServiceImplTest {
+public class BankServiceTest {
 
     BankService bankService;
     Owner firstOwner;
@@ -43,10 +43,10 @@ public class BankServiceImplTest {
         firstOwner = new Owner("Hristo", "Gechev", 20);
         secondOwner = new Owner("Zhivko", "Gechev", 20);
         dsk = new Bank("DSK", "Vasil Levski street", priceList);
-        bankService = new BankServiceImpl();
+        bankService = new BankService();
         accountOfHristo = new BankAccount(firstOwner, "1234123a", "BGN", dsk, new BigDecimal("250"), BankAccountType.CURRENT_ACCOUNT);
         accountOfZhivko = new BankAccount(secondOwner, "1217112a", "USD", dsk, new BigDecimal("100"), BankAccountType.CURRENT_ACCOUNT);
-        savingsAccountOfZhivko = new BankAccount(secondOwner,"abcdertq","USD",dsk,new BigDecimal("1000"),BankAccountType.SAVINGS_ACCOUNT);
+        savingsAccountOfZhivko = new BankAccount(secondOwner, "abcdertq", "USD", dsk, new BigDecimal("1000"), BankAccountType.SAVINGS_ACCOUNT);
     }
 
     @Test
@@ -70,16 +70,16 @@ public class BankServiceImplTest {
     public void successfulTransferMoneyToSameBank() {
         bankService.transferMoney(new BigDecimal("50"), accountOfZhivko, accountOfHristo, LocalDate.of(2000, 5, 2));
         assertEquals(accountOfZhivko.getAmountAvailable(), new BigDecimal("47.50"));
-        assertEquals(accountOfHristo.getAmountAvailable(),new BigDecimal("277.66100"));
+        assertEquals(accountOfHristo.getAmountAvailable(), new BigDecimal("277.66100"));
     }
 
     @Test(expected = NoNeededAmountToTransferException.class)
-    public void isAmountWithTaxesIsHigherThanSourceAmount(){
-        bankService.transferMoney(new BigDecimal("99"),accountOfZhivko,accountOfZhivko,LocalDate.of(2000, 5, 2));
+    public void isAmountWithTaxesIsHigherThanSourceAmount() {
+        bankService.transferMoney(new BigDecimal("99"), accountOfZhivko, accountOfZhivko, LocalDate.of(2000, 5, 2));
     }
 
     @Test(expected = AnyAccountIsNotCurrentFailsTransferException.class)
-    public void isAnyAccountIsNotCurrent(){
-        bankService.transferMoney(new BigDecimal("99"),savingsAccountOfZhivko,accountOfZhivko,LocalDate.of(2000, 5, 2));
+    public void isAnyAccountIsNotCurrent() {
+        bankService.transferMoney(new BigDecimal("99"), savingsAccountOfZhivko, accountOfZhivko, LocalDate.of(2000, 5, 2));
     }
 }
