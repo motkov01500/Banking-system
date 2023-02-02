@@ -50,36 +50,36 @@ public class BankServiceTest {
     }
 
     @Test
-    public void successfulWithdrawing() {
+    public void testSuccessfulWithdrawing() {
         bankService.withDrawing(new BigDecimal("100"), accountOfHristo, LocalDate.of(2000, 5, 2));
         assertEquals(accountOfHristo.getAmountAvailable(), new BigDecimal("149.00"));
     }
 
     @Test(expected = NoNeededAmountToWithdrawException.class)
-    public void withdrawingWithNoNeededAmount() {
+    public void testWithdrawingWithNoNeededAmount() {
         bankService.withDrawing(new BigDecimal("100"), accountOfZhivko, LocalDate.of(2000, 5, 2));
     }
 
     @Test
-    public void successfulDepositToTargetAccount() {
+    public void testSuccessfulDepositToTargetAccount() {
         bankService.depositing(new BigDecimal("150"), accountOfZhivko, LocalDate.of(2000, 5, 2));
         assertEquals(accountOfZhivko.getAmountAvailable(), new BigDecimal("248.50"));
     }
 
     @Test
-    public void successfulTransferMoneyToSameBank() {
+    public void testSuccessfulTransferMoneyToSameBank() {
         bankService.transferMoney(new BigDecimal("50"), accountOfZhivko, accountOfHristo, LocalDate.of(2000, 5, 2));
         assertEquals(accountOfZhivko.getAmountAvailable(), new BigDecimal("47.50"));
         assertEquals(accountOfHristo.getAmountAvailable(), new BigDecimal("277.66100"));
     }
 
     @Test(expected = NoNeededAmountToTransferException.class)
-    public void isAmountWithTaxesIsHigherThanSourceAmount() {
+    public void testIsAmountWithTaxesIsHigherThanSourceAmount() {
         bankService.transferMoney(new BigDecimal("99"), accountOfZhivko, accountOfZhivko, LocalDate.of(2000, 5, 2));
     }
 
     @Test(expected = AnyAccountIsNotCurrentFailsTransferException.class)
-    public void isAnyAccountIsNotCurrent() {
+    public void testIsAnyAccountIsNotCurrent() {
         bankService.transferMoney(new BigDecimal("99"), savingsAccountOfZhivko, accountOfZhivko, LocalDate.of(2000, 5, 2));
     }
 }
