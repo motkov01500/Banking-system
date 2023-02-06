@@ -1,13 +1,17 @@
 package eu.deltasource.internship.bankingsystem.services.Impl;
 
-import eu.deltasource.internship.bankingsystem.*;
-import eu.deltasource.internship.bankingsystem.exceptions.AnyAccountIsNotCurrentFailsTransferException;
-import eu.deltasource.internship.bankingsystem.exceptions.NoNeededAmountToTransferException;
-import eu.deltasource.internship.bankingsystem.exceptions.NoNeededAmountToWithdrawException;
+import eu.deltasource.internship.bankingsystem.enums.BankAccountType;
+import eu.deltasource.internship.bankingsystem.enums.BankTaxType;
+import eu.deltasource.internship.bankingsystem.enums.Currency;
+import eu.deltasource.internship.bankingsystem.exceptions.*;
 import eu.deltasource.internship.bankingsystem.models.Bank;
 import eu.deltasource.internship.bankingsystem.models.BankAccount;
-import eu.deltasource.internship.bankingsystem.models.Owner;
+import eu.deltasource.internship.bankingsystem.models.Customer;
+import eu.deltasource.internship.bankingsystem.repositories.BankAccountRepository;
+import eu.deltasource.internship.bankingsystem.repositories.BankRepository;
+import eu.deltasource.internship.bankingsystem.services.BankAccountService;
 import eu.deltasource.internship.bankingsystem.services.BankService;
+import eu.deltasource.internship.bankingsystem.services.ExchangeRateService;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,70 +20,102 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class BankServiceTest {
 
     BankService bankService;
-    Owner firstOwner;
-    Owner secondOwner;
-    Bank dsk;
+    Customer firstCustomer;
+    Customer secondCustomer;
+    Customer thirdCustomer;
+    Customer fourthCustomer;
     BankAccount accountOfHristo;
+    BankAccount accountOfPetur;
     BankAccount accountOfZhivko;
     BankAccount savingsAccountOfZhivko;
+    ExchangeRateService exchangeRateService;
+    BankAccountRepository bankAccountRepository;
+    BankRepository bankRepository;
+    BankAccountService bankAccountService;
+    Map<BankTaxType, BigDecimal> priceList;
+
 
     @Before
     public void setUp() {
-        Map<BankTaxes, BigDecimal> priceList = new HashMap<BankTaxes, BigDecimal>() {
+        bankRepository = new BankRepository();
+        bankAccountRepository = new BankAccountRepository();
+
+        exchangeRateService = new ExchangeRateService();
+        bankService = new BankService(bankRepository);
+        bankAccountService = new BankAccountService(bankAccountRepository, bankRepository, exchangeRateService);
+        priceList = new HashMap<BankTaxType, BigDecimal>() {
             {
-                put(BankTaxes.DEPOSIT, new BigDecimal("0.01"));
-                put(BankTaxes.TRANSFER_DIFFERENT_BANK, new BigDecimal("0.10"));
-                put(BankTaxes.TRANSFER_SAME_BANK, new BigDecimal("0.05"));
-                put(BankTaxes.BGN_TO_USD, new BigDecimal("1.95"));
-                put(BankTaxes.USD_TO_BGN, new BigDecimal("0.55322"));
-                put(BankTaxes.WITHDRAW, new BigDecimal("0.01"));
+                put(BankTaxType.DEPOSIT, new BigDecimal("0.01"));
+                put(BankTaxType.TRANSFER_DIFFERENT_BANK, new BigDecimal("0.10"));
+                put(BankTaxType.TRANSFER_SAME_BANK, new BigDecimal("0.05"));
+                put(BankTaxType.WITHDRAW, new BigDecimal("0.01"));
             }
         };
-        firstOwner = new Owner("Hristo", "Gechev", 20);
-        secondOwner = new Owner("Zhivko", "Gechev", 20);
-        dsk = new Bank("DSK", "Vasil Levski street", priceList);
-        bankService = new BankService();
-        accountOfHristo = new BankAccount(firstOwner, "1234123a", "BGN", dsk, new BigDecimal("250"), BankAccountType.CURRENT_ACCOUNT);
-        accountOfZhivko = new BankAccount(secondOwner, "1217112a", "USD", dsk, new BigDecimal("100"), BankAccountType.CURRENT_ACCOUNT);
-        savingsAccountOfZhivko = new BankAccount(secondOwner, "abcdertq", "USD", dsk, new BigDecimal("1000"), BankAccountType.SAVINGS_ACCOUNT);
+        bankService.addBank("DSK", "Vasil Levski st.", priceList, "ST32");
+        bankService.addBank("Revolut", "Stones bl.", priceList, "BR35");
+        firstCustomer = new Customer("Hristo", "Gechev", 20,"1010101010");
+        secondCustomer = new Customer("Zhivko", "Gechev", 20,"2020202020");
+        fourthCustomer = new Customer("Petur","Petrov",35,"5432112345");
+
+        accountOfHristo = new BankAccount(firstCustomer, "1234123a", Currency.BGN, "ST32", new BigDecimal("250"), BankAccountType.CURRENT_ACCOUNT);
+        accountOfZhivko = new BankAccount(secondCustomer, "1217112a", Currency.USD, "ST32", new BigDecimal("100"), BankAccountType.CURRENT_ACCOUNT);
+        accountOfPetur = new BankAccount(fourthCustomer,"456357abv",Currency.USD,"BR35",new BigDecimal("200"),BankAccountType.CURRENT_ACCOUNT);
+        savingsAccountOfZhivko = new BankAccount(secondCustomer, "abcdertq", Currency.USD, "ST32", new BigDecimal("1000"), BankAccountType.SAVINGS_ACCOUNT);
     }
 
     @Test
     public void testSuccessfulWithdrawing() {
-        bankService.withDrawing(new BigDecimal("100"), accountOfHristo, LocalDate.of(2000, 5, 2));
+        bankService.withdraw(new BigDecimal("100"), accountOfHristo, LocalDate.of(2000, 5, 2));
         assertEquals(accountOfHristo.getAmountAvailable(), new BigDecimal("149.00"));
     }
 
-    @Test(expected = NoNeededAmountToWithdrawException.class)
-    public void testWithdrawingWithNoNeededAmount() {
-        bankService.withDrawing(new BigDecimal("100"), accountOfZhivko, LocalDate.of(2000, 5, 2));
+    @Test(expected = InsufficientAmountToWithdrawException.class)
+    public void testWithdrawingWithInsufficientAmount() {
+        bankService.withdraw(new BigDecimal("100"), accountOfZhivko, LocalDate.of(2000, 5, 2));
     }
 
     @Test
     public void testSuccessfulDepositToTargetAccount() {
-        bankService.depositing(new BigDecimal("150"), accountOfZhivko, LocalDate.of(2000, 5, 2));
+        bankService.deposit(new BigDecimal("150"), accountOfZhivko, LocalDate.of(2000, 5, 2));
         assertEquals(accountOfZhivko.getAmountAvailable(), new BigDecimal("248.50"));
     }
 
     @Test
     public void testSuccessfulTransferMoneyToSameBank() {
-        bankService.transferMoney(new BigDecimal("50"), accountOfZhivko, accountOfHristo, LocalDate.of(2000, 5, 2));
+        bankAccountService.transfer(new BigDecimal("50"), accountOfZhivko, accountOfHristo, LocalDate.of(2000, 5, 2));
         assertEquals(accountOfZhivko.getAmountAvailable(), new BigDecimal("47.50"));
-        assertEquals(accountOfHristo.getAmountAvailable(), new BigDecimal("277.66100"));
+        assertEquals(accountOfHristo.getAmountAvailable(), new BigDecimal("340.50"));
     }
 
-    @Test(expected = NoNeededAmountToTransferException.class)
-    public void testIsAmountWithTaxesIsHigherThanSourceAmount() {
-        bankService.transferMoney(new BigDecimal("99"), accountOfZhivko, accountOfZhivko, LocalDate.of(2000, 5, 2));
+    @Test
+    public void testSuccessfulTransferToOtherBank() {
+        bankAccountService.transfer(new BigDecimal("50"), accountOfZhivko,accountOfPetur,LocalDate.of(2000,5,2));
+        assertEquals(accountOfZhivko.getAmountAvailable(),new BigDecimal("45.00"));
+        assertEquals(accountOfPetur.getAmountAvailable(),new BigDecimal("250"));
     }
 
-    @Test(expected = AnyAccountIsNotCurrentFailsTransferException.class)
-    public void testIsAnyAccountIsNotCurrent() {
-        bankService.transferMoney(new BigDecimal("99"), savingsAccountOfZhivko, accountOfZhivko, LocalDate.of(2000, 5, 2));
+    @Test(expected = InsufficientAmountToTransferException.class)
+    public void testIsAmountWithTaxesHigherThanSourceAmount() {
+        bankAccountService.transfer(new BigDecimal("99"), accountOfZhivko, accountOfZhivko, LocalDate.of(2000, 5, 2));
+    }
+
+    @Test(expected = isSavingsAccountException.class)
+    public void testIsAnyAccountCurrent() {
+        bankAccountService.transfer(new BigDecimal("99"), savingsAccountOfZhivko, accountOfZhivko, LocalDate.of(2000, 5, 2));
+    }
+
+    @Test(expected = InvalidPersonalIdentificationNumberException.class)
+    public void testIsCustomerPINCorrect() {
+        thirdCustomer = new Customer("Lyubo","Motkov",21,"01502312121");
+    }
+
+    @Test(expected = InvalidBankIdentifierCodeException.class)
+    public void testIsBankIdentifierCodeValid(){
+        bankService.addBank("RandomBank","Random st",priceList,"SS335");
     }
 }

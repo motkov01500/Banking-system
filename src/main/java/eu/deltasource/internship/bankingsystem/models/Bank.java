@@ -1,7 +1,7 @@
 package eu.deltasource.internship.bankingsystem.models;
 
-import eu.deltasource.internship.bankingsystem.BankAccountType;
-import eu.deltasource.internship.bankingsystem.BankTaxes;
+import eu.deltasource.internship.bankingsystem.enums.BankTaxType;
+import eu.deltasource.internship.bankingsystem.exceptions.InvalidBankIdentifierCodeException;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -12,46 +12,49 @@ import java.util.*;
  */
 public class Bank {
 
+    private String bankIdentifierCode;
     private String name;
     private String address;
-    private Map<BankTaxes, BigDecimal> priceList;
-    private List<Transaction> bankTransactions;
-    private List<Owner> bankCustomers;
+    private Map<BankTaxType, BigDecimal> priceList;
+    private List<Customer> bankCustomers;
 
-    public Bank(String name, String address, Map<BankTaxes, BigDecimal> priceList) {
+    public Bank(String name, String address, Map<BankTaxType, BigDecimal> priceList, String bankIdentifierCode) {
         this.name = name;
         this.address = address;
         this.priceList = priceList;
-        this.bankTransactions = new ArrayList<>();
         this.bankCustomers = new ArrayList<>();
+        this.setBankIdentifierCode(bankIdentifierCode);
     }
 
     public String getName() {
         return name;
     }
 
-    public List<Transaction> getBankTransactions(){
-        return Collections.unmodifiableList(bankTransactions);
-    }
-
-    public List<Owner> getBankCustomers(){
+    public List<Customer> getBankCustomers() {
         return Collections.unmodifiableList(bankCustomers);
     }
 
-    public Map<BankTaxes, BigDecimal> getPriceList(){
-        return priceList;
+    public BigDecimal getBankTax(BankTaxType taxType) {
+        return priceList.get(taxType);
     }
 
-    public void addTransaction(Transaction transaction) {
-        bankTransactions.add(transaction);
+    public String getBankIdentifierCode() {
+        return bankIdentifierCode;
     }
 
-    public void addBankCustomer(Owner owner){
-        bankCustomers.add(owner);
+    public void setBankIdentifierCode(String bankIdentifierCode) {
+        if (bankIdentifierCode.length() != 4)
+            throw new InvalidBankIdentifierCodeException("Identifier code must be 4 symbols.");
+
+        this.bankIdentifierCode = bankIdentifierCode;
+    }
+
+    public void addBankCustomer(Customer customer) {
+        bankCustomers.add(customer);
     }
 
     @Override
-    public String toString(){
-        return String.format("The bank: %s, has %s owners.\nOwners:\n %s\n Transactions:\n %s \n=========================================\n",name,bankCustomers.size(),bankCustomers,bankTransactions);
+    public String toString() {
+        return String.format("The bank name is: %s.\nThe address is: %s.", name, address);
     }
 }
